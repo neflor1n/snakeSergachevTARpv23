@@ -13,7 +13,7 @@ namespace snakeSergachevTARpv23
         {
 
             Console.SetWindowSize(80, 25);
-
+            /*
             // Raami joonistamine
             VerticalLine v1 = new VerticalLine(0, 10, 5, '%');
             Draw(v1);
@@ -30,18 +30,21 @@ namespace snakeSergachevTARpv23
             figures.Add(v1);
             figures.Add(h1 );
 
-            foreach (var f figures)
+            foreach (var f in figures)
             {
                 f.Draw();
             }
-            
+            */
             // Klassi esimene eksemplar
-            Point p = new Point(4, 5, '*');
-          
 
+            Walls walls = new Walls(80, 25);
+            walls.Draw();
+
+
+            Point p = new Point(4, 5, '*');
             Snake snake = new Snake(p,4, Direction.RIGHT);
-            snake.Drow();
-            snake.Move();
+            snake.Draw();
+            
 
             // Loome toidu suvalises kohas vahemikus *80, 25* $-märgiga
             FoodCreator foodCreator = new FoodCreator(80, 25, '$');
@@ -49,26 +52,32 @@ namespace snakeSergachevTARpv23
             food.Draw();
 
 
+            Score score = new Score();
+            score.Display();  
 
-            static void Draw(Figure figure) { 
-                figure.Drow();
-            }
-            
 
             // Lõputu silmus, milles kasutaja klõpsab nooltel ja madu liigub ja kui madu puudutab toitu, siis tekib toitu juurde ja joonistatakse pea
             while (true)
             {
+                
+                if (walls.IsHit(snake) || snake.IsHitTail())
+                {
+                    break;
+                }
                 if (snake.Eat(food))
                 {
                     food = foodCreator.CreateFood();
                     food.Draw();
+
+                    score.Increment();
+                    score.Display();
                 }
                 else
                 {
                     snake.Move();
                 }
                 // viivitage 100 millisekundit
-                Thread.Sleep(100);
+                Thread.Sleep(300);
                 // Nupuvajutuste kontrollimine
                 if (Console.KeyAvailable)
                 {
@@ -77,7 +86,7 @@ namespace snakeSergachevTARpv23
                     snake.HandleKey(key.Key);
                     
                 }
-                Thread.Sleep(100);
+                Thread.Sleep(300);
                 snake.Move();
             }
         }

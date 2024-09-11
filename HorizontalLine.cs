@@ -22,11 +22,11 @@ namespace snakeSergachevTARpv23
             
         }
         
-        public override void Draw()
+        public virtual void Drow()
         {
             Console.ForegroundColor = ConsoleColor.Red;
 
-            base.Drow();
+            base.Draw();
             
             Console.ForegroundColor = ConsoleColor.White;
         }
