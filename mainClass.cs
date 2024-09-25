@@ -4,6 +4,8 @@ using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+
 
 namespace snakeSergachevTARpv23
 {
@@ -12,29 +14,8 @@ namespace snakeSergachevTARpv23
         static void Main(string[] args)
         {
 
-            Console.SetWindowSize(80, 25);
-            /*
-            // Raami joonistamine
-            VerticalLine v1 = new VerticalLine(0, 10, 5, '%');
-            Draw(v1);
-
-            Point p = new Point(4, 5, '*');
-            Figure fSnake = new Snake(p, 4, Direction.RIGHT);
-            Draw(fSnake);
-            Snake snake = (Snake)fSnake;
-
-            HorizontalLine h1 = new HorizontalLine(0, 5, 6, '&');
-
-            List<Figure> figures = new List<Figure>();
-            figures.Add(fSnake);
-            figures.Add(v1);
-            figures.Add(h1 );
-
-            foreach (var f in figures)
-            {
-                f.Draw();
-            }
-            */
+            Console.SetWindowSize(105, 25);
+            
             // Klassi esimene eksemplar
 
             Walls walls = new Walls(80, 25);
@@ -53,22 +34,31 @@ namespace snakeSergachevTARpv23
 
 
             Score score = new Score();
-            score.Display();  
+            score.Display();
 
 
-            // Lõputu silmus, milles kasutaja klõpsab nooltel ja madu liigub ja kui madu puudutab toitu, siis tekib toitu juurde ja joonistatakse pea
-            while (true)
+            DateTime startTime = DateTime.Now;
+            bool gameOver = false;
+
+            // Peamine mängutsükkel
+            while (!gameOver)
             {
-                
+                // Arvutage kulunud aeg
+                TimeSpan elapsedTime = DateTime.Now - startTime;
+
+                // Kontrollige kokkupõrkeid
                 if (walls.IsHit(snake) || snake.IsHitTail())
                 {
-                    break;
+                    score.SetDuration((int)elapsedTime.TotalSeconds);
+                    score.SaveScore();
+                    gameOver = true;
                 }
+
+                // Kontrollige, kas madu sööb toitu
                 if (snake.Eat(food))
                 {
                     food = foodCreator.CreateFood();
                     food.Draw();
-
                     score.Increment();
                     score.Display();
                 }
@@ -76,20 +66,27 @@ namespace snakeSergachevTARpv23
                 {
                     snake.Move();
                 }
-                // viivitage 100 millisekundit
-                Thread.Sleep(300);
-                // Nupuvajutuste kontrollimine
+
+                // Kuva kulunud aeg paremas ülanurgas
+                Console.SetCursorPosition(80, 0); // Määrake asukoht paremas ülanurgas
+                Console.WriteLine($"Elapsed Time: {elapsedTime.Seconds + elapsedTime.Minutes * 60} seconds");
+
+                // Liikumiskiiruse viivitus
+                Thread.Sleep(100);
+
+                // Käsitsege kasutaja sisendit
                 if (Console.KeyAvailable)
                 {
-                    // Kontrollime, millist nuppu kasutaja vajutas ja liigutame madu selles suunas
                     ConsoleKeyInfo key = Console.ReadKey();
                     snake.HandleKey(key.Key);
-                    
                 }
-                Thread.Sleep(300);
-                snake.Move();
             }
+
+            // Lõpliku skoori kuva
+            Console.Clear();
+            Console.WriteLine($"Game Over! Your score: {score.CurrentScore}");
+            Console.WriteLine($"Total Time: {(DateTime.Now - startTime).TotalSeconds} seconds");
         }
-       
+
     }
 }
