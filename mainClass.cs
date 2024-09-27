@@ -13,7 +13,7 @@ namespace snakeSergachevTARpv23
     {
         static void Main(string[] args)
         {
-
+            Console.Clear();
             Console.SetWindowSize(105, 25);
             
             // Klassi esimene eksemplar
